@@ -10,10 +10,30 @@ A Flow processor plugin for processing Stellar account data.
   - Signers array with weights and sponsors
   - Thresholds (low, medium, high, and master weight)
 - Provides GraphQL schema for querying account data
+- Configurable account filtering
 
 ## Configuration
 
-No specific configuration is required for this processor.
+The processor can be configured to process specific accounts or all accounts:
+
+```json
+{
+  "process_all": false,  // Set to true to process all accounts
+  "account_ids": [       // List of specific account IDs to process
+    "GABC123...",
+    "GDEF456..."
+  ]
+}
+```
+
+### Configuration Options
+
+| Parameter | Required | Type | Default | Description |
+|-----------|----------|------|---------|-------------|
+| process_all | No | boolean | false | If true, process all accounts. If false, only process accounts listed in account_ids |
+| account_ids | No | string[] | [] | List of specific account IDs to process. Required if process_all is false |
+
+Note: At least one of `process_all` or `account_ids` must be specified. If neither is provided, the processor will log a warning but continue running.
 
 ## GraphQL Schema
 

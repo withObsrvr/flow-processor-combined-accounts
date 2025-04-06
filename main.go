@@ -60,6 +60,9 @@ type AccountSigner struct {
 // AccountsProcessor implements pluginapi.Processor
 type AccountsProcessor struct {
 	consumers []pluginapi.Consumer
+	// Add configuration fields
+	accountIDs map[string]bool // Set of account IDs to process
+	processAll bool            // Whether to process all accounts
 }
 
 // GetSchemaDefinition returns GraphQL type definitions for this plugin
@@ -132,7 +135,28 @@ func (ap *AccountsProcessor) Type() pluginapi.PluginType {
 
 // Initialize initializes the processor with configuration
 func (ap *AccountsProcessor) Initialize(config map[string]interface{}) error {
-	// (Optional) Process any configuration here
+	// Initialize account IDs map
+	ap.accountIDs = make(map[string]bool)
+
+	// Check if we should process all accounts
+	if all, ok := config["process_all"].(bool); ok {
+		ap.processAll = all
+	}
+
+	// Get specific account IDs to process
+	if accounts, ok := config["account_ids"].([]interface{}); ok {
+		for _, acc := range accounts {
+			if accountID, ok := acc.(string); ok {
+				ap.accountIDs[accountID] = true
+			}
+		}
+	}
+
+	// If no accounts specified and not processing all, log a warning
+	if !ap.processAll && len(ap.accountIDs) == 0 {
+		log.Printf("Warning: No accounts specified in configuration. Use 'process_all: true' or specify 'account_ids' to process accounts.")
+	}
+
 	log.Printf("AccountsProcessor initialized with config: %+v", config)
 	return nil
 }
@@ -163,6 +187,12 @@ func (ap *AccountsProcessor) Process(ctx context.Context, msg pluginapi.Message)
 		record, err := processAccountChange(change, ledgerMeta)
 		if err != nil {
 			log.Printf("Error processing account change: %v", err)
+			continue
+		}
+
+		// Check if we should process this account
+		if !ap.processAll && !ap.accountIDs[record.AccountID] {
+			log.Printf("Skipping account %s as it's not in the configured list", record.AccountID)
 			continue
 		}
 
