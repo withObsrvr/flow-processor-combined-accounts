@@ -1,0 +1,22 @@
+# Build artifacts
+*.so
+result/
+flake.lock
+
+# Go specific
+/vendor/
+*.test
+*.out
+*.prof
+
+# IDE specific
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS specific
+.DS_Store
+Thumbs.db 
+
+docs/
