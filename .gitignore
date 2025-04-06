@@ -1,10 +1,10 @@
 # Build artifacts
 *.so
 result/
-flake.lock
+#flake.lock
 
 # Go specific
-/vendor/
+#/vendor/
 *.test
 *.out
 *.prof
