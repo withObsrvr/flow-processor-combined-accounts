@@ -61,8 +61,9 @@ type AccountSigner struct {
 type AccountsProcessor struct {
 	consumers []pluginapi.Consumer
 	// Add configuration fields
-	accountIDs map[string]bool // Set of account IDs to process
-	processAll bool            // Whether to process all accounts
+	accountIDs        map[string]bool // Set of account IDs to process
+	processAll        bool            // Whether to process all accounts
+	networkPassphrase string          // Network passphrase for transaction validation
 }
 
 // GetSchemaDefinition returns GraphQL type definitions for this plugin
@@ -137,6 +138,13 @@ func (ap *AccountsProcessor) Type() pluginapi.PluginType {
 func (ap *AccountsProcessor) Initialize(config map[string]interface{}) error {
 	// Initialize account IDs map
 	ap.accountIDs = make(map[string]bool)
+
+	// Get network passphrase (required)
+	networkPassphrase, ok := config["network_passphrase"].(string)
+	if !ok {
+		return fmt.Errorf("missing required configuration: network_passphrase")
+	}
+	ap.networkPassphrase = networkPassphrase
 
 	// Check if we should process all accounts
 	if all, ok := config["process_all"].(bool); ok {

@@ -18,6 +18,7 @@ The processor can be configured to process specific accounts or all accounts:
 
 ```json
 {
+  "network_passphrase": "Test SDF Network ; September 2015",  // Required: Network passphrase for transaction validation
   "process_all": false,  // Set to true to process all accounts
   "account_ids": [       // List of specific account IDs to process
     "GABC123...",
@@ -30,6 +31,7 @@ The processor can be configured to process specific accounts or all accounts:
 
 | Parameter | Required | Type | Default | Description |
 |-----------|----------|------|---------|-------------|
+| network_passphrase | Yes | string | - | Network passphrase for transaction validation |
 | process_all | No | boolean | false | If true, process all accounts. If false, only process accounts listed in account_ids |
 | account_ids | No | string[] | [] | List of specific account IDs to process. Required if process_all is false |
 
